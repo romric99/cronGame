@@ -165,9 +165,6 @@ pauseBtn.addEventListener('click', togglePause);
 // Botão de Reiniciar a rodada para o jogador atual
 restartBtn.addEventListener('click', startTimer);
 
-// Gera os campos para o valor inicial (2 jogadores)
-generatePlayerInputs();
-
 // --- Registro do Service Worker ---
 // Adicione este bloco no final do seu arquivo script.js
 
@@ -182,3 +179,85 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+// Botão de Reiniciar a rodada para o jogador atual
+restartBtn.addEventListener('click', startTimer);
+
+// --- LÓGICA DE PERSISTÊNCIA COM LOCALSTORAGE ---
+
+const CONFIG_KEY = 'cronGameConfig'; // Chave para salvar no localStorage
+
+// NOVA FUNÇÃO: Carrega as configurações salvas ao abrir a página
+function loadSettings() {
+    const savedData = localStorage.getItem(CONFIG_KEY);
+
+    if (savedData) {
+        const config = JSON.parse(savedData);
+
+        // Preenche as configurações gerais
+        numPlayersInput.value = config.players.length;
+        roundTimeInput.value = config.gameSettings.time;
+        timerModeSelect.value = config.gameSettings.mode;
+
+        // Gera os campos de jogador com base no número salvo
+        generatePlayerInputs();
+
+        // Preenche os nomes e cores dos jogadores
+        config.players.forEach((player, index) => {
+            document.getElementById(`player-name-${index + 1}`).value = player.name;
+            document.getElementById(`player-color-${index + 1}`).value = player.color;
+        });
+        
+        console.log('Configurações carregadas com sucesso!');
+    } else {
+        // Se não houver dados salvos, gera os inputs para o valor padrão
+        generatePlayerInputs();
+        console.log('Nenhuma configuração salva encontrada. Usando padrões.');
+    }
+}
+
+// MODIFICAÇÃO na função startGame()
+// A única mudança é adicionar o código para salvar no final
+function startGame() {
+    // 1. Coletar dados dos jogadores
+    players = [];
+    const numPlayers = parseInt(numPlayersInput.value, 10);
+    for (let i = 1; i <= numPlayers; i++) {
+        const name = document.getElementById(`player-name-${i}`).value;
+        const color = document.getElementById(`player-color-${i}`).value;
+        players.push({ name: name || `Jogador ${i}`, color });
+    }
+
+    // 2. Coletar configurações do jogo
+    gameSettings = {
+        time: parseInt(roundTimeInput.value, 10),
+        mode: timerModeSelect.value
+    };
+
+    // --- NOVO CÓDIGO AQUI ---
+    // Salva a configuração completa no localStorage
+    const configToSave = { players, gameSettings };
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(configToSave));
+    console.log('Configurações salvas!');
+    // --- FIM DO NOVO CÓDIGO ---
+
+    // 3. Validar se há jogadores
+    if (players.length === 0) {
+        alert('Adicione pelo menos um jogador!');
+        return;
+    }
+
+    // 4. Mudar de tela
+    setupScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+
+    // 5. Iniciar o primeiro turno
+    currentPlayerIndex = 0;
+    setupTurn();
+}
+
+// Remova a chamada generatePlayerInputs() do final do arquivo
+// generatePlayerInputs(); // << APAGUE OU COMENTE ESTA LINHA
+
+// CHAME A NOVA FUNÇÃO no final do script
+loadSettings(); // << ADICIONE ESTA LINHA NO LUGAR

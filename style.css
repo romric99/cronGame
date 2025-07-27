@@ -134,3 +134,14 @@ button:hover {
 #pause-btn.paused:hover {
     background-color: #e0a800;
 }
+
+/* Adicione este estilo ao final do seu style.css */
+.secondary-button {
+    background-color: #dc3545; /* Cor vermelha para indicar uma ação de 'reset' */
+    margin-top: 10px;
+    width: 100%;
+}
+
+.secondary-button:hover {
+    background-color: #c82333;
+}
