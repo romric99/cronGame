@@ -167,3 +167,18 @@ restartBtn.addEventListener('click', startTimer);
 
 // Gera os campos para o valor inicial (2 jogadores)
 generatePlayerInputs();
+
+// --- Registro do Service Worker ---
+// Adicione este bloco no final do seu arquivo script.js
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/cronGame/sw.js') // ATENÇÃO AQUI!
+      .then(registration => {
+        console.log('Service Worker registrado com sucesso:', registration);
+      })
+      .catch(error => {
+        console.log('Falha ao registrar o Service Worker:', error);
+      });
+  });
+}

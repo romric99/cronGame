@@ -1,7 +1,7 @@
 {
   "name": "Cronômetro de Jogo de Tabuleiro",
   "short_name": "Cronômetro",
-  "start_url": "index.html",
+  "start_url": "/cronGame/",  
   "display": "standalone",
   "background_color": "#f0f2f5",
   "theme_color": "#007bff",
