@@ -102,21 +102,23 @@ function getRandomColor() {
  */
 function updateProgressBar() {
     let percentage = 0;
-    if (gameSettings.mode === 'regressive') {
-        // A barra diminui de 100% para 0%
-        percentage = (currentTime / gameSettings.time) * 100;
-        // Muda a cor da barra nos últimos 10 segundos
-        progressBar.style.backgroundColor = (currentTime <= 10) ? '#f8d7da' : '#d4edda';
-    } else {
-        // A barra aumenta de 0% para 100%, limitada ao tempo da rodada
-        percentage = (currentTime / gameSettings.time) * 100;
-        if (percentage > 100) {
-            percentage = 100;
+    if (gameSettings.time > 0) { // Evita divisão por zero
+        if (gameSettings.mode === 'regressive') {
+            // A barra diminui de 100% para 0% (de cima para baixo)
+            percentage = (currentTime / gameSettings.time) * 100;
+            // Muda a cor da barra nos últimos 10 segundos
+            progressBar.style.backgroundColor = (currentTime <= 10) ? '#f8d7da' : '#d4edda';
+        } else {
+            // A barra aumenta de 0% para 100% (de baixo para cima)
+            percentage = (currentTime / gameSettings.time) * 100;
+            if (percentage > 100) {
+                percentage = 100;
+            }
         }
     }
-    progressBar.style.width = `${percentage}%`;
+    // A mágica acontece aqui: atualizamos a ALTURA em vez da LARGURA
+    progressBar.style.height = `${percentage}%`;
 }
-
 
 /**
  * Inicia o jogo, salva as configurações e troca de tela.

@@ -107,30 +107,38 @@ button:active {
 
 /* --- TELA DO JOGO --- */
 #game-screen {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     height: 100vh;
     width: 100vw;
     max-width: none;
-    padding: 1.5rem;
-    box-sizing: border-box;
+    padding: 0; /* Removemos o padding daqui */
     border-radius: 0;
-    position: relative;
+    position: relative; /* Essencial para posicionar os filhos */
     overflow: hidden;
-    background-color: transparent; /* CORREÇÃO: Fundo transparente para a barra de progresso ser visível */
+    background-color: transparent;
 }
 
-/* Barra de progresso no fundo */
+/* Barra de progresso VERTICAL */
 #progress-bar {
     position: absolute;
-    top: 0;
+    bottom: 0; /* Alinha a barra na parte de baixo para animação 'de baixo pra cima' */
     left: 0;
-    height: 100%;
-    width: 0%;
+    width: 100%; /* Largura total */
+    height: 0%;  /* Altura começa em 0 (para modo progressivo) */
     background-color: #d4edda;
-    transition: width 1s linear, background-color 0.5s;
-    /* CORREÇÃO: z-index removido para que a barra fique atrás do conteúdo mas na frente do body */
+    transition: height 1s linear, background-color 0.5s; /* Anima a ALTURA */
+}
+
+/* NOVO: Estilos para o container do conteúdo */
+#content-wrapper {
+    position: relative; /* Garante que fique acima da barra de progresso */
+    z-index: 1; /* Coloca este container na frente da barra */
+    height: 100%;
+    width: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #player-info {
