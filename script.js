@@ -35,17 +35,52 @@ const CONFIG_KEY = 'cronGameConfig'; // Chave para o localStorage
  */
 function generatePlayerInputs() {
     const numPlayers = parseInt(numPlayersInput.value, 10);
-    playersSetupDiv.innerHTML = ''; // Limpa campos anteriores para evitar duplicatas
+    playersSetupDiv.innerHTML = ''; // Limpa campos anteriores
 
     for (let i = 1; i <= numPlayers; i++) {
         const playerDiv = document.createElement('div');
         playerDiv.classList.add('form-group');
-        playerDiv.innerHTML = `
-            <label for="player-name-${i}">Nome do Jogador ${i}</label>
-            <input type="text" id="player-name-${i}" value="Jogador ${i}">
-            <label for="player-color-${i}">Cor</label>
-            <input type="color" id="player-color-${i}" value="${getRandomColor()}">
-        `;
+
+        // Label principal do jogador
+        const mainLabel = document.createElement('label');
+        mainLabel.textContent = `Jogador ${i}`;
+        
+        // Container para os inputs ficarem lado a lado
+        const inputGroup = document.createElement('div');
+        inputGroup.classList.add('player-input-group');
+
+        // Input de texto para o nome
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = `player-name-${i}`;
+        nameInput.value = `Jogador ${i}`;
+        nameInput.placeholder = 'Nome do jogador';
+
+        // Input de cor (que será escondido)
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.id = `player-color-${i}`;
+        colorInput.value = getRandomColor();
+
+        // Label para o input de cor (será nosso botão visível)
+        const colorLabel = document.createElement('label');
+        colorLabel.htmlFor = `player-color-${i}`;
+        colorLabel.classList.add('color-picker-label');
+        colorLabel.style.backgroundColor = colorInput.value; // Define a cor inicial
+
+        // Evento para atualizar a cor do "botão" quando o usuário escolhe uma nova cor
+        colorInput.addEventListener('input', (event) => {
+            colorLabel.style.backgroundColor = event.target.value;
+        });
+
+        // Adiciona os elementos na ordem correta
+        inputGroup.appendChild(nameInput);
+        inputGroup.appendChild(colorInput); // O input escondido precisa estar no DOM
+        inputGroup.appendChild(colorLabel); // O nosso "botão"
+        
+        playerDiv.appendChild(mainLabel);
+        playerDiv.appendChild(inputGroup);
+
         playersSetupDiv.appendChild(playerDiv);
     }
 }
@@ -172,29 +207,34 @@ function loadSettings() {
     const savedData = localStorage.getItem(CONFIG_KEY);
 
     if (savedData) {
-        const config = JSON.parse(savedData);
+      const config = JSON.parse(savedData);
 
-        // Preenche as configurações gerais
-        numPlayersInput.value = config.players.length;
-        roundTimeInput.value = config.gameSettings.time;
-        timerModeSelect.value = config.gameSettings.mode;
+      // Preenche as configurações gerais
+      numPlayersInput.value = config.players.length;
+      roundTimeInput.value = config.gameSettings.time;
+      timerModeSelect.value = config.gameSettings.mode;
 
-        // Gera os campos de jogador com base no número salvo
-        generatePlayerInputs();
+      // Gera os campos de jogador com base no número salvo
+      generatePlayerInputs();
 
-        // Preenche os nomes e cores dos jogadores salvos
-        config.players.forEach((player, index) => {
-            const nameInput = document.getElementById(`player-name-${index + 1}`);
-            const colorInput = document.getElementById(`player-color-${index + 1}`);
-            if (nameInput) nameInput.value = player.name;
-            if (colorInput) colorInput.value = player.color;
-        });
-        
-        console.log('Configurações carregadas com sucesso!');
+      // Preenche os nomes e cores dos jogadores salvos
+      config.players.forEach((player, index) => {
+        const nameInput = document.getElementById(`player-name-${index + 1}`);
+        const colorInput = document.getElementById(`player-color-${index + 1}`);
+        if (nameInput) nameInput.value = player.name;
+        if (colorInput) {
+          colorInput.value = player.color;
+          document.querySelector(
+            `label[for=${colorInput.id}]`
+          ).style.backgroundColor = player.color;
+        }
+      });
+
+      console.log("Configurações carregadas com sucesso!");
     } else {
-        // Se não houver dados salvos, gera os inputs para o valor padrão
-        generatePlayerInputs();
-        console.log('Nenhuma configuração salva encontrada. Usando padrões.');
+      // Se não houver dados salvos, gera os inputs para o valor padrão
+      generatePlayerInputs();
+      console.log("Nenhuma configuração salva encontrada. Usando padrões.");
     }
 }
 

@@ -145,3 +145,43 @@ button:hover {
 .secondary-button:hover {
     background-color: #c82333;
 }
+
+
+/* --- ESTILOS PARA O LAYOUT DOS JOGADORES --- */
+
+/* Container que agrupa o input de nome e o botão de cor */
+.player-input-group {
+    display: flex; /* Ativa o Flexbox para alinhar os itens horizontalmente */
+    align-items: center; /* Alinha os itens verticalmente no centro */
+    gap: 10px; /* Adiciona um espaço entre o nome e o botão de cor */
+}
+
+/* Faz o campo de nome ocupar todo o espaço disponível */
+.player-input-group input[type="text"] {
+    flex-grow: 1; /* O input de texto se expande */
+}
+
+/* Esconde o input de cor original de forma acessível */
+.player-input-group input[type="color"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none; /* Garante que não interfira no clique */
+}
+
+/* Estiliza a LABEL para parecer um botão de cor customizado */
+.color-picker-label {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #ccc;
+    border-radius: 8px; /* Bordas um pouco arredondadas */
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+/* Efeito visual ao passar o mouse sobre o botão de cor */
+.color-picker-label:hover {
+    transform: scale(1.1); /* Aumenta um pouco de tamanho */
+    border-color: #007bff; /* Destaca a borda */
+}
