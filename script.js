@@ -1,4 +1,5 @@
-// --- Seleção de Elementos do DOM ---
+// --- SELEÇÃO DE ELEMENTOS DO DOM ---
+// Telas
 const setupScreen = document.getElementById('setup-screen');
 const gameScreen = document.getElementById('game-screen');
 
@@ -9,6 +10,7 @@ const playersSetupDiv = document.getElementById('players-setup');
 const roundTimeInput = document.getElementById('round-time');
 const timerModeSelect = document.getElementById('timer-mode');
 const startGameBtn = document.getElementById('start-game-btn');
+const clearSettingsBtn = document.getElementById('clear-settings-btn');
 
 // Elementos do Jogo
 const playerNameH2 = document.getElementById('player-name');
@@ -17,20 +19,23 @@ const timerDisplay = document.getElementById('timer-display');
 const pauseBtn = document.getElementById('pause-btn');
 const restartBtn = document.getElementById('restart-btn');
 
-// --- Variáveis de Estado do Jogo ---
+// --- VARIÁVEIS DE ESTADO DO JOGO E CONSTANTES ---
 let players = [];
 let gameSettings = {};
 let currentPlayerIndex = 0;
 let timerInterval = null;
 let currentTime = 0;
 let isPaused = false;
+const CONFIG_KEY = 'cronGameConfig'; // Chave para o localStorage
 
-// --- Funções ---
+// --- FUNÇÕES PRINCIPAIS ---
 
-// Gera os campos de nome e cor para cada jogador
+/**
+ * Gera os campos de input para nome e cor com base no número de jogadores.
+ */
 function generatePlayerInputs() {
     const numPlayers = parseInt(numPlayersInput.value, 10);
-    playersSetupDiv.innerHTML = ''; // Limpa campos anteriores
+    playersSetupDiv.innerHTML = ''; // Limpa campos anteriores para evitar duplicatas
 
     for (let i = 1; i <= numPlayers; i++) {
         const playerDiv = document.createElement('div');
@@ -45,14 +50,19 @@ function generatePlayerInputs() {
     }
 }
 
-// Gera uma cor aleatória para o input de cor
+/**
+ * Gera uma cor hexadecimal aleatória.
+ * @returns {string} Uma cor no formato #RRGGBB.
+ */
 function getRandomColor() {
     return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 }
 
-// Inicia o jogo: coleta dados, esconde a configuração e mostra a tela do jogo
+/**
+ * Inicia o jogo, salva as configurações e troca de tela.
+ */
 function startGame() {
-    // 1. Coletar dados dos jogadores
+    // 1. Coletar dados dos jogadores do formulário
     players = [];
     const numPlayers = parseInt(numPlayersInput.value, 10);
     for (let i = 1; i <= numPlayers; i++) {
@@ -67,22 +77,29 @@ function startGame() {
         mode: timerModeSelect.value
     };
 
-    // 3. Validar se há jogadores
+    // 3. Salvar a configuração completa no localStorage
+    const configToSave = { players, gameSettings };
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(configToSave));
+    console.log('Configurações salvas!');
+
+    // 4. Validar se há jogadores
     if (players.length === 0) {
         alert('Adicione pelo menos um jogador!');
         return;
     }
 
-    // 4. Mudar de tela
+    // 5. Mudar de tela
     setupScreen.style.display = 'none';
     gameScreen.style.display = 'block';
 
-    // 5. Iniciar o primeiro turno
+    // 6. Iniciar o primeiro turno
     currentPlayerIndex = 0;
     setupTurn();
 }
 
-// Configura o turno para o jogador atual
+/**
+ * Configura a interface para o turno do jogador atual.
+ */
 function setupTurn() {
     isPaused = false;
     pauseBtn.textContent = 'Pausar';
@@ -95,16 +112,13 @@ function setupTurn() {
     startTimer();
 }
 
-// Inicia o cronômetro (progressivo ou regressivo)
+/**
+ * Inicia ou reinicia o cronômetro para o jogador atual.
+ */
 function startTimer() {
     clearInterval(timerInterval); // Limpa qualquer timer anterior
 
-    if (gameSettings.mode === 'regressive') {
-        currentTime = gameSettings.time;
-    } else {
-        currentTime = 0;
-    }
-
+    currentTime = (gameSettings.mode === 'regressive') ? gameSettings.time : 0;
     updateTimerDisplay();
 
     timerInterval = setInterval(() => {
@@ -113,7 +127,7 @@ function startTimer() {
                 currentTime--;
                 if (currentTime < 0) {
                     currentTime = 0;
-                    clearInterval(timerInterval); // Para o timer quando chega a zero
+                    clearInterval(timerInterval);
                 }
             } else {
                 currentTime++;
@@ -123,71 +137,37 @@ function startTimer() {
     }, 1000);
 }
 
-// Atualiza o display do tempo no formato MM:SS
+/**
+ * Atualiza o display do tempo no formato MM:SS.
+ */
 function updateTimerDisplay() {
     const minutes = Math.floor(currentTime / 60);
     const seconds = currentTime % 60;
     timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-// Passa para o próximo jogador
+/**
+ * Passa a vez para o próximo jogador na ordem.
+ */
 function nextPlayer() {
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     setupTurn();
 }
 
-// Pausa ou retoma o cronômetro
+/**
+ * Pausa ou retoma o cronômetro.
+ */
 function togglePause() {
     isPaused = !isPaused;
-    if (isPaused) {
-        pauseBtn.textContent = 'Retomar';
-        pauseBtn.classList.add('paused');
-    } else {
-        pauseBtn.textContent = 'Pausar';
-        pauseBtn.classList.remove('paused');
-    }
+    pauseBtn.textContent = isPaused ? 'Retomar' : 'Pausar';
+    pauseBtn.classList.toggle('paused', isPaused);
 }
 
-// --- Event Listeners ---
+// --- FUNÇÕES DE PERSISTÊNCIA ---
 
-// Gera os inputs de jogador ao confirmar o número
-confirmPlayersBtn.addEventListener('click', generatePlayerInputs);
-
-// Inicia o jogo
-startGameBtn.addEventListener('click', startGame);
-
-// O próprio timer passa a vez
-timerDisplay.addEventListener('click', nextPlayer);
-
-// Botão de Pausa
-pauseBtn.addEventListener('click', togglePause);
-
-// Botão de Reiniciar a rodada para o jogador atual
-restartBtn.addEventListener('click', startTimer);
-
-// --- Registro do Service Worker ---
-// Adicione este bloco no final do seu arquivo script.js
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/cronGame/sw.js') // ATENÇÃO AQUI!
-      .then(registration => {
-        console.log('Service Worker registrado com sucesso:', registration);
-      })
-      .catch(error => {
-        console.log('Falha ao registrar o Service Worker:', error);
-      });
-  });
-}
-
-// Botão de Reiniciar a rodada para o jogador atual
-restartBtn.addEventListener('click', startTimer);
-
-// --- LÓGICA DE PERSISTÊNCIA COM LOCALSTORAGE ---
-
-const CONFIG_KEY = 'cronGameConfig'; // Chave para salvar no localStorage
-
-// NOVA FUNÇÃO: Carrega as configurações salvas ao abrir a página
+/**
+ * Carrega as configurações salvas do localStorage quando a página é aberta.
+ */
 function loadSettings() {
     const savedData = localStorage.getItem(CONFIG_KEY);
 
@@ -202,10 +182,12 @@ function loadSettings() {
         // Gera os campos de jogador com base no número salvo
         generatePlayerInputs();
 
-        // Preenche os nomes e cores dos jogadores
+        // Preenche os nomes e cores dos jogadores salvos
         config.players.forEach((player, index) => {
-            document.getElementById(`player-name-${index + 1}`).value = player.name;
-            document.getElementById(`player-color-${index + 1}`).value = player.color;
+            const nameInput = document.getElementById(`player-name-${index + 1}`);
+            const colorInput = document.getElementById(`player-color-${index + 1}`);
+            if (nameInput) nameInput.value = player.name;
+            if (colorInput) colorInput.value = player.color;
         });
         
         console.log('Configurações carregadas com sucesso!');
@@ -216,48 +198,40 @@ function loadSettings() {
     }
 }
 
-// MODIFICAÇÃO na função startGame()
-// A única mudança é adicionar o código para salvar no final
-function startGame() {
-    // 1. Coletar dados dos jogadores
-    players = [];
-    const numPlayers = parseInt(numPlayersInput.value, 10);
-    for (let i = 1; i <= numPlayers; i++) {
-        const name = document.getElementById(`player-name-${i}`).value;
-        const color = document.getElementById(`player-color-${i}`).value;
-        players.push({ name: name || `Jogador ${i}`, color });
+/**
+ * Limpa as configurações salvas e recarrega a página.
+ */
+function clearSettings() {
+    if (confirm('Tem certeza de que deseja apagar todas as configurações salvas?')) {
+        localStorage.removeItem(CONFIG_KEY);
+        location.reload(); // Recarrega a página para aplicar o estado limpo
     }
-
-    // 2. Coletar configurações do jogo
-    gameSettings = {
-        time: parseInt(roundTimeInput.value, 10),
-        mode: timerModeSelect.value
-    };
-
-    // --- NOVO CÓDIGO AQUI ---
-    // Salva a configuração completa no localStorage
-    const configToSave = { players, gameSettings };
-    localStorage.setItem(CONFIG_KEY, JSON.stringify(configToSave));
-    console.log('Configurações salvas!');
-    // --- FIM DO NOVO CÓDIGO ---
-
-    // 3. Validar se há jogadores
-    if (players.length === 0) {
-        alert('Adicione pelo menos um jogador!');
-        return;
-    }
-
-    // 4. Mudar de tela
-    setupScreen.style.display = 'none';
-    gameScreen.style.display = 'block';
-
-    // 5. Iniciar o primeiro turno
-    currentPlayerIndex = 0;
-    setupTurn();
 }
 
-// Remova a chamada generatePlayerInputs() do final do arquivo
-// generatePlayerInputs(); // << APAGUE OU COMENTE ESTA LINHA
+// --- EVENT LISTENERS ---
+confirmPlayersBtn.addEventListener('click', generatePlayerInputs);
+startGameBtn.addEventListener('click', startGame);
+clearSettingsBtn.addEventListener('click', clearSettings);
+timerDisplay.addEventListener('click', nextPlayer);
+pauseBtn.addEventListener('click', togglePause);
+restartBtn.addEventListener('click', startTimer);
 
-// CHAME A NOVA FUNÇÃO no final do script
-loadSettings(); // << ADICIONE ESTA LINHA NO LUGAR
+
+// --- INICIALIZAÇÃO E REGISTRO DO SERVICE WORKER ---
+
+// Carrega as configurações salvas ou inicia com os padrões
+loadSettings();
+
+// Registro do Service Worker para funcionalidades PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // O caminho deve incluir o nome do repositório para o GitHub Pages
+    navigator.serviceWorker.register('/cronGame/sw.js')
+      .then(registration => {
+        console.log('Service Worker registrado com sucesso:', registration);
+      })
+      .catch(error => {
+        console.log('Falha ao registrar o Service Worker:', error);
+      });
+  });
+}
