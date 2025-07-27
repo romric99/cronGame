@@ -185,3 +185,64 @@ button:hover {
     transform: scale(1.1); /* Aumenta um pouco de tamanho */
     border-color: #007bff; /* Destaca a borda */
 }
+
+
+/* Transforma a tela do jogo em um container flexível de tela cheia */
+#game-screen {
+    display: flex;
+    flex-direction: column; /* Organiza os itens em uma coluna */
+    justify-content: space-between; /* Espaça os itens verticalmente */
+    height: 100vh; /* Ocupa 100% da altura da tela */
+    width: 100vw; /* Ocupa 100% da largura da tela */
+    max-width: none; /* Remove a largura máxima */
+    padding: 1.5rem;
+    box-sizing: border-box; /* Garante que o padding não aumente o tamanho */
+    border-radius: 0; /* Remove bordas arredondadas para ocupar a tela toda */
+    position: relative; /* Necessário para posicionar a barra de progresso */
+    overflow: hidden; /* Esconde qualquer coisa que saia dos limites */
+}
+
+/* NOVO: Estilo para a barra de progresso */
+#progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%; /* Começa com 0 e será alterada via JS */
+    background-color: #d4edda; /* Um verde claro e sutil */
+    z-index: -1; /* Coloca a barra atrás de todo o conteúdo */
+    transition: width 1s linear, background-color 0.5s; /* Animação suave */
+}
+
+#player-info {
+    flex-shrink: 0; /* Impede que o nome do jogador encolha */
+}
+
+#player-name {
+    font-size: 1.8rem; /* Ajuste de tamanho se necessário */
+}
+
+/* Faz o botão do contador crescer e ocupar o espaço disponível */
+#timer-display {
+    flex-grow: 1; /* Este é o truque! Faz o elemento se expandir */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25vw; /* Tamanho da fonte responsivo à largura da tela */
+    margin: 1rem 0;
+    border: none;
+    background-color: transparent; /* Fundo transparente para ver a barra de progresso */
+    color: #343a40;
+}
+#timer-display:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Efeito sutil ao passar o mouse */
+}
+
+
+.controls {
+    flex-shrink: 0; /* Impede que os controles encolham */
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto; /* Centraliza os botões se a tela for muito larga */
+}
+

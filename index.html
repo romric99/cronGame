@@ -40,20 +40,27 @@
         <button id="clear-settings-btn" class="secondary-button">Limpar Configurações</button>
 
     </div>
-
+    
     <!-- TELA DO JOGO -->
     <div id="game-screen" class="screen" style="display: none;">
+    
+        <!-- NOVO: Barra de progresso. Fica no início para estar no fundo. -->
+        <div id="progress-bar"></div>
+    
         <div id="player-info">
             <span id="player-color-indicator"></span>
             <h2 id="player-name">Nome do Jogador</h2>
         </div>
-
+    
         <button id="timer-display">00:00</button>
-        
+    
         <div class="controls">
             <button id="pause-btn">Pausar</button>
             <button id="restart-btn">Reiniciar Rodada</button>
         </div>
+    
+        <!-- NOVO: Elemento de áudio para o som -->
+        <audio id="countdown-sound" src="tick.mp3" preload="auto"></audio>
     </div>
 
     <script src="script.js"></script>

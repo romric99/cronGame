@@ -19,6 +19,10 @@ const timerDisplay = document.getElementById('timer-display');
 const pauseBtn = document.getElementById('pause-btn');
 const restartBtn = document.getElementById('restart-btn');
 
+// Adicione estas linhas junto com as outras seleções de elementos
+const progressBar = document.getElementById('progress-bar');
+const countdownSound = document.getElementById('countdown-sound');
+
 // --- VARIÁVEIS DE ESTADO DO JOGO E CONSTANTES ---
 let players = [];
 let gameSettings = {};
@@ -94,6 +98,27 @@ function getRandomColor() {
 }
 
 /**
+ * Atualiza a barra de progresso com base no tempo atual.
+ */
+function updateProgressBar() {
+    let percentage = 0;
+    if (gameSettings.mode === 'regressive') {
+        // A barra diminui de 100% para 0%
+        percentage = (currentTime / gameSettings.time) * 100;
+        // Muda a cor da barra nos últimos 10 segundos
+        progressBar.style.backgroundColor = (currentTime <= 10) ? '#f8d7da' : '#d4edda';
+    } else {
+        // A barra aumenta de 0% para 100%, limitada ao tempo da rodada
+        percentage = (currentTime / gameSettings.time) * 100;
+        if (percentage > 100) {
+            percentage = 100;
+        }
+    }
+    progressBar.style.width = `${percentage}%`;
+}
+
+
+/**
  * Inicia o jogo, salva as configurações e troca de tela.
  */
 function startGame() {
@@ -154,12 +179,23 @@ function startTimer() {
     clearInterval(timerInterval); // Limpa qualquer timer anterior
 
     currentTime = (gameSettings.mode === 'regressive') ? gameSettings.time : 0;
+    
+    // Resetar o som e a barra de progresso no início da rodada
+    countdownSound.pause();
+    countdownSound.currentTime = 0;
+    updateProgressBar();
     updateTimerDisplay();
 
     timerInterval = setInterval(() => {
         if (!isPaused) {
             if (gameSettings.mode === 'regressive') {
                 currentTime--;
+                
+                // Toca o som quando faltam 10 segundos
+                if (currentTime === 10) {
+                    countdownSound.play().catch(e => console.error("Erro ao tocar som:", e));
+                }
+
                 if (currentTime < 0) {
                     currentTime = 0;
                     clearInterval(timerInterval);
@@ -167,7 +203,9 @@ function startTimer() {
             } else {
                 currentTime++;
             }
+            // Atualiza os displays a cada segundo
             updateTimerDisplay();
+            updateProgressBar();
         }
     }, 1000);
 }
