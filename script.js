@@ -153,6 +153,7 @@ function startGame() {
     // 5. Mudar de tela
     setupScreen.style.display = 'none';
     gameScreen.style.display = 'block';
+    window.scrollTo(0, 0);
 
     // 6. Iniciar o primeiro turno
     currentPlayerIndex = 0;
