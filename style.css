@@ -47,7 +47,7 @@ button:active {
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     text-align: left;
 }
 
@@ -70,11 +70,11 @@ button:active {
 
 .player-name-input {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.9rem;
     border-radius: 5px;
     border: 1px solid #948b8b;
     box-sizing: border-box;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
 .player-confirm-group {
@@ -85,6 +85,8 @@ button:active {
 
 /* Faz o campo de número ocupar todo o espaço disponível, empurrando o botão para a direita. */
 .player-confirm-group input[type="number"] {
+    padding: 0.9rem; /* Aumenta o padding interno, tornando o input mais alto */
+    font-size: 1.4rem; /* Um bom tamanho de fonte para o texto digitado */
     flex-grow: 1;
 }
 
@@ -185,6 +187,13 @@ button:active {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+#timer-display:active,
+.controls button:active {
+    transform: scale(0.97); /* Encolhe o botão ligeiramente ao ser pressionado */
+    opacity: 0.8;           /* Deixa-o um pouco mais transparente */
+    transition: transform 0.05s ease-out; /* Faz o efeito ser rápido e suave */
+}
+
 .controls {
     flex-shrink: 0;
     display: flex;
@@ -196,8 +205,12 @@ button:active {
 }
 
 .controls button {
-    background-color: #6c757d;
+    background-color: rgba(108, 117, 125, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     width: 48%;
+    padding: 1rem 0;      /* Aumenta a altura do botão (padding vertical) */
+    font-size: 1.2rem;    /* Aumenta a fonte dentro do botão */
+    font-weight: bold;    /* Deixa o texto em negrito */
 }
 
 .controls button:hover {

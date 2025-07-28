@@ -22,6 +22,8 @@ const restartBtn = document.getElementById('restart-btn');
 const progressBar = document.getElementById('progress-bar');
 const countdownSound = document.getElementById('countdown-sound');
 
+const backBtn = document.getElementById('back-btn');
+
 // --- VARIÁVEIS DE ESTADO DO JOGO E CONSTANTES ---
 let players = [];
 let gameSettings = {};
@@ -29,6 +31,8 @@ let currentPlayerIndex = 0;
 let timerInterval = null;
 let currentTime = 0;
 let isPaused = false;
+let wakeLock = null;
+
 const CONFIG_KEY = 'cronGameConfig'; // Chave para o localStorage
 
 // --- FUNÇÕES PRINCIPAIS ---
@@ -112,6 +116,8 @@ function startGame() {
     gameScreen.style.display = 'block';
     window.scrollTo(0, 0);
 
+    manageWakeLock('request');
+
     // 6. Iniciar o primeiro turno
     currentPlayerIndex = 0;
     setupTurn();
@@ -187,6 +193,23 @@ function startTimer() {
     }, 1000);
 }
 
+async function manageWakeLock(action) {
+    if ('wakeLock' in navigator) {
+        try {
+            if (action === 'request') {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock ativado!');
+            } else if (action === 'release' && wakeLock !== null) {
+                await wakeLock.release();
+                wakeLock = null;
+                console.log('Wake Lock liberado.');
+            }
+        } catch (err) {
+            console.error(`${err.name}, ${err.message}`);
+        }
+    }
+}
+
 /**
  * Atualiza o display do tempo no formato MM:SS.
  */
@@ -199,6 +222,12 @@ function updateTimerDisplay() {
  */
 function nextPlayer() {
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    
+    // Feedback tátil ao passar o turno!
+    if (navigator.vibrate) {
+        navigator.vibrate(50); // Vibra por 50 milissegundos
+    }
+
     setupTurn();
 }
 
@@ -281,3 +310,14 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+backBtn.addEventListener('click', () => {
+    if (confirm('Tem certeza que deseja voltar e encerrar o jogo atual?')) {
+        // LIBERA O WAKE LOCK
+        manageWakeLock('release');
+
+        gameScreen.style.display = 'none';
+        setupScreen.style.display = 'block';
+        clearInterval(timerInterval); // Para o timer
+    }
+});
