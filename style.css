@@ -160,7 +160,7 @@ button:active {
 #player-name {
     margin: 0;
     /* Valores aumentados para uma fonte maior */
-    font-size: clamp(3rem, 8vw, 5rem); 
+    font-size: clamp(4rem, 8vw, 5rem); 
     color: #343a40;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
 }
@@ -171,9 +171,9 @@ button:active {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: clamp(10rem, 25vw, 15rem); /* Fonte responsiva gigante */
+    font-size: clamp(15rem, 25vw, 20rem); /* Fonte responsiva gigante */
     font-weight: bold;
-    font-family: 'Courier New Bold', Courier, monospace;
+    font-family: 'Arial Bold', sans-serif;
     margin: 1rem 0;
     border: 10px solid rgb(131, 131, 131);
     background-color: transparent;
