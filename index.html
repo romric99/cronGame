@@ -10,13 +10,18 @@
   <body>
     <!-- TELA DE CONFIGURAÇÃO -->
     <div id="setup-screen" class="screen">
-      <h1>Configurar Jogo</h1>
-
+      <h1>cronGame</h1>
+    
       <div class="form-group">
         <label for="num-players">Quantos jogadores?</label>
-        <input type="number" id="num-players" min="1" max="10" value="2" />
-        <button id="confirm-players">Confirmar</button>
+        <!-- Novo container para o input e o botão -->
+        <div class="player-confirm-group">
+          <input type="number" id="num-players" min="2" max="10" value="2" />
+          <button id="confirm-players">Confirmar</button>
+        </div>
       </div>
+
+      <label style="font-size: 20px;"><strong>Jogadores</strong></label><p>
 
       <div id="players-setup">
         <!-- Os inputs dos jogadores serão gerados aqui pelo JS -->
@@ -30,8 +35,8 @@
       <div class="form-group">
         <label for="timer-mode">Modo do contador</label>
         <select id="timer-mode">
-          <option value="regressive">Regressivo (Contagem Regressiva)</option>
-          <option value="progressive">Progressivo (Contagem Normal)</option>
+          <option value="regressive">Regressivo</option>
+          <option value="progressive">Progressivo</option>
         </select>
       </div>
 
@@ -49,7 +54,6 @@
       <!-- NOVO: Container para todo o conteúdo visível -->
       <div id="content-wrapper">
         <div id="player-info">
-          <span id="player-color-indicator"></span>
           <h2 id="player-name">Nome do Jogador</h2>
         </div>
 

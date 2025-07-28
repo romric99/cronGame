@@ -54,6 +54,7 @@ button:active {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
+    font-size: 1.2rem;
 }
 
 .form-group input[type="number"],
@@ -63,46 +64,51 @@ button:active {
     border-radius: 5px;
     border: 1px solid #ccc;
     box-sizing: border-box;
+    font-size: 1.5rem;
 }
 
-/* Container para nome do jogador e seletor de cor */
-.player-input-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Campo de texto do nome do jogador */
-.player-input-group input[type="text"] {
-    flex-grow: 1;
+.player-name-input {
+    width: 100%;
     padding: 0.75rem;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #948b8b;
+    box-sizing: border-box;
+    font-size: 1.5rem;
 }
 
-/* Esconde o input de cor padrão */
-.player-input-group input[type="color"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    pointer-events: none;
+.player-confirm-group {
+    display: flex;         /* 1. Ativa o Flexbox para alinhar os itens lado a lado. */
+    align-items: center; /* 2. (Opcional, mas recomendado) Alinha os itens verticalmente no centro. */
+    gap: 10px;           /* 3. Adiciona um pequeno espaço entre o input e o botão. */
 }
 
-/* Estiliza a LABEL para parecer um botão de cor customizado */
-.color-picker-label {
-    width: 40px;
-    height: 40px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    cursor: pointer;
+/* Faz o campo de número ocupar todo o espaço disponível, empurrando o botão para a direita. */
+.player-confirm-group input[type="number"] {
+    flex-grow: 1;
+}
+
+/* Garante que o botão não encolha se o espaço for apertado. */
+.player-confirm-group button {
     flex-shrink: 0;
-    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.color-picker-label:hover {
-    transform: scale(1.1);
-    border-color: #007bff;
+
+.player-name-group {
+    display: flex;         /* Ativa o Flexbox para alinhar os itens lado a lado */
+    align-items: center; /* Alinha a label e o input verticalmente */
+    gap: 10px;           /* Adiciona um espaço entre eles */
+}
+
+/* Define que a label não deve encolher */
+.player-name-group label {
+    flex-shrink: 0;
+    font-weight: bold; /* Deixa o texto da label em negrito */
+}
+
+/* Faz o input de texto crescer para ocupar o espaço restante */
+.player-name-group .player-name-input {
+    flex-grow: 1;
+    width: 100%; /* Garante que ele tente ocupar a largura máxima dentro do flex container */
 }
 
 /* --- TELA DO JOGO --- */
@@ -150,17 +156,12 @@ button:active {
     margin-bottom: 1rem;
 }
 
-#player-color-indicator {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #333;
-}
-
 #player-name {
     margin: 0;
-    font-size: clamp(1.5rem, 5vw, 2.5rem); /* Fonte responsiva */
+    /* Valores aumentados para uma fonte maior */
+    font-size: clamp(3rem, 8vw, 5rem); 
     color: #343a40;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
 }
 
 /* Contador gigante que preenche o espaço */
@@ -169,11 +170,11 @@ button:active {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: clamp(8rem, 25vw, 15rem); /* Fonte responsiva gigante */
+    font-size: clamp(10rem, 25vw, 15rem); /* Fonte responsiva gigante */
     font-weight: bold;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New Bold', Courier, monospace;
     margin: 1rem 0;
-    border: none;
+    border: 10px solid rgb(131, 131, 131);
     background-color: transparent;
     color: #343a40;
     line-height: 1;
@@ -207,7 +208,7 @@ button:active {
 .cta-button {
     width: 100%;
     padding: 1rem;
-    font-size: 1.2rem;
+    font-size: 2rem;
     font-weight: bold;
     background-color: #28a745;
 }

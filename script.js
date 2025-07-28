@@ -14,7 +14,6 @@ const clearSettingsBtn = document.getElementById('clear-settings-btn');
 
 // Elementos do Jogo
 const playerNameH2 = document.getElementById('player-name');
-const playerColorIndicator = document.getElementById('player-color-indicator');
 const timerDisplay = document.getElementById('timer-display');
 const pauseBtn = document.getElementById('pause-btn');
 const restartBtn = document.getElementById('restart-btn');
@@ -39,62 +38,19 @@ const CONFIG_KEY = 'cronGameConfig'; // Chave para o localStorage
  */
 function generatePlayerInputs() {
     const numPlayers = parseInt(numPlayersInput.value, 10);
-    playersSetupDiv.innerHTML = ''; // Limpa campos anteriores
+    playersSetupDiv.innerHTML = '';
 
     for (let i = 1; i <= numPlayers; i++) {
         const playerDiv = document.createElement('div');
         playerDiv.classList.add('form-group');
-
-        // Label principal do jogador
-        const mainLabel = document.createElement('label');
-        mainLabel.textContent = `Jogador ${i}`;
-        
-        // Container para os inputs ficarem lado a lado
-        const inputGroup = document.createElement('div');
-        inputGroup.classList.add('player-input-group');
-
-        // Input de texto para o nome
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.id = `player-name-${i}`;
-        nameInput.value = `Jogador ${i}`;
-        nameInput.placeholder = 'Nome do jogador';
-
-        // Input de cor (que será escondido)
-        const colorInput = document.createElement('input');
-        colorInput.type = 'color';
-        colorInput.id = `player-color-${i}`;
-        colorInput.value = getRandomColor();
-
-        // Label para o input de cor (será nosso botão visível)
-        const colorLabel = document.createElement('label');
-        colorLabel.htmlFor = `player-color-${i}`;
-        colorLabel.classList.add('color-picker-label');
-        colorLabel.style.backgroundColor = colorInput.value; // Define a cor inicial
-
-        // Evento para atualizar a cor do "botão" quando o usuário escolhe uma nova cor
-        colorInput.addEventListener('input', (event) => {
-            colorLabel.style.backgroundColor = event.target.value;
-        });
-
-        // Adiciona os elementos na ordem correta
-        inputGroup.appendChild(nameInput);
-        inputGroup.appendChild(colorInput); // O input escondido precisa estar no DOM
-        inputGroup.appendChild(colorLabel); // O nosso "botão"
-        
-        playerDiv.appendChild(mainLabel);
-        playerDiv.appendChild(inputGroup);
-
+        playerDiv.innerHTML = `
+            <div class="player-name-group">
+                <label for="player-name-${i}">${i}</label>
+                <input type="text" id="player-name-${i}" value="Jogador ${i}" class="player-name-input">
+            </div>
+        `;
         playersSetupDiv.appendChild(playerDiv);
     }
-}
-
-/**
- * Gera uma cor hexadecimal aleatória.
- * @returns {string} Uma cor no formato #RRGGBB.
- */
-function getRandomColor() {
-    return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 }
 
 /**
@@ -102,21 +58,23 @@ function getRandomColor() {
  */
 function updateProgressBar() {
     let percentage = 0;
-    if (gameSettings.time > 0) { // Evita divisão por zero
+    if (gameSettings.time > 0) {
+        // --- LÓGICA DO MODO REGRESSIVO ---
         if (gameSettings.mode === 'regressive') {
-            // A barra diminui de 100% para 0% (de cima para baixo)
             percentage = (currentTime / gameSettings.time) * 100;
-            // Muda a cor da barra nos últimos 10 segundos
-            progressBar.style.backgroundColor = (currentTime <= 10) ? '#f8d7da' : '#d4edda';
-        } else {
-            // A barra aumenta de 0% para 100% (de baixo para cima)
+            const isEnding = currentTime <= 9;
+            progressBar.style.backgroundColor = isEnding ? '#f8d7da' : '#d4edda';
+        } 
+        // --- LÓGICA DO MODO PROGRESSIVO ---
+        else {
             percentage = (currentTime / gameSettings.time) * 100;
-            if (percentage > 100) {
-                percentage = 100;
-            }
+            if (percentage > 100) percentage = 100;
+            
+            // A condição de "finalizando" é a mesma do som
+            const isEnding = gameSettings.time > 10 && currentTime >= gameSettings.time - 9;
+            progressBar.style.backgroundColor = isEnding ? '#f8d7da' : '#d4edda';
         }
     }
-    // A mágica acontece aqui: atualizamos a ALTURA em vez da LARGURA
     progressBar.style.height = `${percentage}%`;
 }
 
@@ -129,8 +87,7 @@ function startGame() {
     const numPlayers = parseInt(numPlayersInput.value, 10);
     for (let i = 1; i <= numPlayers; i++) {
         const name = document.getElementById(`player-name-${i}`).value;
-        const color = document.getElementById(`player-color-${i}`).value;
-        players.push({ name: name || `Jogador ${i}`, color });
+        players.push({ name: name || `Jogador ${i}` });
     }
 
     // 2. Coletar configurações do jogo
@@ -170,7 +127,6 @@ function setupTurn() {
 
     const currentPlayer = players[currentPlayerIndex];
     playerNameH2.textContent = currentPlayer.name;
-    playerColorIndicator.style.backgroundColor = currentPlayer.color;
     
     startTimer();
 }
@@ -184,28 +140,46 @@ function startTimer() {
     currentTime = (gameSettings.mode === 'regressive') ? gameSettings.time : 0;
     
     // Resetar o som e a barra de progresso no início da rodada
-    countdownSound.pause();
-    countdownSound.currentTime = 0;
+    if (countdownSound) { // Verifica se o elemento de som existe
+        countdownSound.pause();
+        countdownSound.currentTime = 0;
+    }
     updateProgressBar();
     updateTimerDisplay();
 
     timerInterval = setInterval(() => {
         if (!isPaused) {
+            // --- LÓGICA DO MODO REGRESSIVO (sem alterações) ---
             if (gameSettings.mode === 'regressive') {
                 currentTime--;
                 
                 // Toca o som quando faltam 10 segundos
-                if (currentTime === 10) {
-                    countdownSound.play().catch(e => console.error("Erro ao tocar som:", e));
+                if (gameSettings.time > 9 && currentTime === 9) {
+                    if (countdownSound) countdownSound.play().catch(e => console.error("Erro ao tocar som:", e));
                 }
 
                 if (currentTime < 0) {
                     currentTime = 0;
                     clearInterval(timerInterval);
                 }
-            } else {
+            } 
+            // --- NOVA LÓGICA PARA O MODO PROGRESSIVO ---
+            else { 
                 currentTime++;
+                
+                // Toca o som quando faltam 10 segundos para o fim
+                // A condição é: o tempo atual é igual ao tempo total menos 10?
+                if (gameSettings.time > 9 && currentTime === gameSettings.time - 9) {
+                    if (countdownSound) countdownSound.play().catch(e => console.error("Erro ao tocar som:", e));
+                }
+                
+                // Para o contador quando ele atinge o tempo definido
+                if (currentTime >= gameSettings.time) {
+                    currentTime = gameSettings.time; // Garante que não ultrapasse
+                    clearInterval(timerInterval);
+                }
             }
+            
             // Atualiza os displays a cada segundo
             updateTimerDisplay();
             updateProgressBar();
@@ -217,9 +191,7 @@ function startTimer() {
  * Atualiza o display do tempo no formato MM:SS.
  */
 function updateTimerDisplay() {
-    const minutes = Math.floor(currentTime / 60);
-    const seconds = currentTime % 60;
-    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    timerDisplay.textContent = currentTime;
 }
 
 /**
@@ -261,14 +233,7 @@ function loadSettings() {
       // Preenche os nomes e cores dos jogadores salvos
       config.players.forEach((player, index) => {
         const nameInput = document.getElementById(`player-name-${index + 1}`);
-        const colorInput = document.getElementById(`player-color-${index + 1}`);
         if (nameInput) nameInput.value = player.name;
-        if (colorInput) {
-          colorInput.value = player.color;
-          document.querySelector(
-            `label[for=${colorInput.id}]`
-          ).style.backgroundColor = player.color;
-        }
       });
 
       console.log("Configurações carregadas com sucesso!");
