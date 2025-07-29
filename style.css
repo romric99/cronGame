@@ -2,7 +2,7 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: #f0f2f5;
-    color: #333;
+    color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,7 +11,7 @@ body {
 }
 
 .screen {
-    background-color: rgb(165, 158, 158);
+    background-color: rgb(0, 44, 138);
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -21,12 +21,12 @@ body {
 }
 
 button {
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 1.5rem;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    font-size: 1.2rem;
+    background-color: #75d8ff;
+    color: rgb(0, 0, 0);
+    font-size: 1.4rem;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
 }
@@ -42,7 +42,7 @@ button:active {
 /* --- TELA DE CONFIGURAÇÃO --- */
 #setup-screen h1 {
     margin-top: 0;
-    color: #000000;
+    color: #ffffff;
     font-size: 3rem;
 }
 
@@ -133,7 +133,7 @@ button:active {
     left: 0;
     width: 100%; /* Largura total */
     height: 0%;  /* Altura começa em 0 (para modo progressivo) */
-    background-color: #d4edda;
+    background-color: #d4d7ed;
     transition: height 1s linear, background-color 0.5s; /* Anima a ALTURA */
 }
 

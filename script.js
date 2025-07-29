@@ -67,7 +67,8 @@ function updateProgressBar() {
         if (gameSettings.mode === 'regressive') {
             percentage = (currentTime / gameSettings.time) * 100;
             const isEnding = currentTime <= 9;
-            progressBar.style.backgroundColor = isEnding ? '#f8d7da' : '#d4edda';
+            progressBar.style.backgroundColor = isEnding ? '#220377ff' : '#5042a1ff';
+            //progressBar.style.backgroundColor = isEnding ? '#f8d7da' : '#d4edda';
         } 
         // --- LÓGICA DO MODO PROGRESSIVO ---
         else {
@@ -77,6 +78,7 @@ function updateProgressBar() {
             // A condição de "finalizando" é a mesma do som
             const isEnding = gameSettings.time > 10 && currentTime >= gameSettings.time - 9;
             progressBar.style.backgroundColor = isEnding ? '#f8d7da' : '#d4edda';
+            //progressBar.style.backgroundColor = isEnding ? '#f8d7da' : '#d4edda';
         }
     }
     progressBar.style.height = `${percentage}%`;
